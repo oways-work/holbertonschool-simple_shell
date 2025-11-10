@@ -51,7 +51,7 @@ int main(int argc, char **argv)
 		if (child_pid == 0)
 		{
 
-			char *exec_argv[] = {line, NULL};
+			execve(args[0], args, environ)
 
 
 			if (execve(line, exec_argv, environ) == -1)
