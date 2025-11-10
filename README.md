@@ -1,3 +1,5 @@
+**noting that most file were originally created in another repository than transfered here**
+
 Simple Shell Project
 
 A custom UNIX command-line interpreter built from scratch in C, as part of the ALX Software Engineering program curriculum.
