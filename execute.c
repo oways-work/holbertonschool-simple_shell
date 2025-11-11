@@ -39,7 +39,7 @@ int execute_command(char **args, char **argv, char *command_path, char *line)
 		wait(&status);
 		if (strcmp(command_path, args[0]) != 0)
 			free(command_path);
-		
+
 		if (WIFEXITED(status))
 			return (WEXITSTATUS(status)); /* Return the child's exit status */
 	}
