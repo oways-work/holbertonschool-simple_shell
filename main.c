@@ -1,6 +1,48 @@
 #include "shell.h"
 
 /**
+ * process_command - Tokenizes, finds, and executes a command.
+ * @line: The command line string.
+ * @argv: The main argument vector (for program name).
+ * @last_status: Pointer to the last exit status.
+ */
+void process_command(char *line, char **argv, int *last_status)
+{
+	char *args[64];
+	char *token, *command_path;
+	const char *delim = " \t\n";
+	int i, built_in_status;
+
+	i = 0;
+	token = strtok(line, delim);
+	while (token != NULL)
+	{
+		args[i++] = token;
+		token = strtok(NULL, delim);
+	}
+	args[i] = NULL;
+	if (args[0] == NULL)
+		return;
+
+	built_in_status = handle_builtin(args, line, *last_status);
+	if (built_in_status == 1)
+	{
+		*last_status = 0; /* Builtins (like env) return 0 */
+		return;
+	}
+
+	command_path = find_command_path(args[0]);
+	if (command_path == NULL)
+	{
+		fprintf(stderr, "%s: 1: %s: not found\n", argv[0], args[0]);
+		*last_status = 127;
+		return;
+	}
+
+	*last_status = execute_command(args, argv, command_path, line);
+}
+
+/**
  * main - Entry point for the simple shell.
  * @argc: Argument count (unused).
  * @argv: Argument vector (for program name).
@@ -12,11 +54,7 @@ int main(int argc, char **argv)
 	char *line = NULL;
 	size_t len = 0;
 	ssize_t read_bytes;
-	char *args[64];
-	char *token, *command_path;
-	const char *delim = " \t\n";
-	int i, built_in_status;
-	int last_status = 0; /* Track the last exit status */
+	int last_status = 0;
 
 	(void)argc;
 	while (1)
@@ -32,30 +70,9 @@ int main(int argc, char **argv)
 		}
 		if (line[0] == '\n')
 			continue;
-		i = 0;
-		token = strtok(line, delim);
-		while (token != NULL)
-		{
-			args[i++] = token;
-			token = strtok(NULL, delim);
-		}
-		args[i] = NULL;
-		if (args[0] == NULL)
-			continue;
-		/* Pass the last status to the builtin handler */
-		built_in_status = handle_builtin(args, line, last_status);
-		if (built_in_status == 1)
-			continue;
-		command_path = find_command_path(args[0]);
-		if (command_path == NULL)
-		{
-			fprintf(stderr, "%s: 1: %s: not found\n", argv[0], args[0]);
-			last_status = 127; /* Set status to 127 */
-			continue;
-		}
-		/* Store the returned status from the executed command */
-		last_status = execute_command(args, argv, command_path, line);
+
+		process_command(line, argv, &last_status);
 	}
 	free(line);
-	return (last_status); /* Return the last command's status */
+	return (last_status);
 }
