@@ -1,5 +1,5 @@
-#ifndef SHELL_H
-#define SHELL_H
+#ifndef _SHELL_H_
+#define _SHELL_H_
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -10,27 +10,25 @@
 #include <sys/stat.h>
 #include <errno.h>
 
+/* Global environment variable */
 extern char **environ;
 
-/* main.c */
-/* (main function) */
+/* === Main Functions === */
+void execute_command(char **args, char **argv, char *command_path, char *line);
 
-/* find_path.c */
-char *find_command_path(char *command);
+/* === Built-in Functions (builtins.c) === */
+int handle_builtin(char **args, char *line);
+void print_env(void);
 
-/* env_helpers.c */
+/* === Environment Helpers (env_helpers.c) === */
 char *_getenv(const char *name);
 
-/* string_helpers.c */
+/* === Path Finder (find_path.c) === */
+char *find_command_path(char *command);
+
+/* === String Helpers (string_helpers.c) === */
 char *_strdup(const char *str);
 int _strlen(const char *s);
 char *_strcpy(char *dest, const char *src);
 
-/* string_helpers2.c */
-char *_strcat(char *dest, const char *src);
-int _strcmp(const char *s1, const char *s2);
-char *_strchr(const char *s, int c);
-int _strncmp(const char *s1, const char *s2, size_t n);
-
-
-#endif /* SHELL_H */
+#endif /* _SHELL_H_ */
