@@ -77,7 +77,8 @@ int main(int argc, char **argv)
 		else
 		{
 			wait(&status);
-			free(command_path);
+			if (command_path != args[0])
+				free(command_path);
 		}
 	}
 
