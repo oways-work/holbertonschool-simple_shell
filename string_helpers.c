@@ -10,6 +10,8 @@ int _strlen(const char *s)
 {
 	int len = 0;
 
+	if (!s)
+		return (0);
 	while (s[len] != '\0')
 	{
 		len++;
@@ -38,7 +40,7 @@ char *_strcpy(char *dest, const char *src)
 }
 
 /**
- * _strdup - Duplicates a string using _strlen and _strcpy.
+ * _strdup - Duplicates a string.
  * @str: The string to duplicate.
  *
  * Return: A pointer to the newly allocated duplicate string,
