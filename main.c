@@ -5,7 +5,7 @@
  * @argc: Argument count (unused).
  * @argv: Argument vector (for program name).
  *
- * Return: 0 on successful exit.
+ * Return: 0 on successful exit, or the status of the last command.
  */
 int main(int argc, char **argv)
 {
@@ -16,6 +16,7 @@ int main(int argc, char **argv)
 	char *token, *command_path;
 	const char *delim = " \t\n";
 	int i, built_in_status;
+	int last_status = 0; /* Track the last exit status */
 
 	(void)argc;
 	while (1)
@@ -41,17 +42,20 @@ int main(int argc, char **argv)
 		args[i] = NULL;
 		if (args[0] == NULL)
 			continue;
-		built_in_status = handle_builtin(args, line);
+		/* Pass the last status to the builtin handler */
+		built_in_status = handle_builtin(args, line, last_status);
 		if (built_in_status == 1)
 			continue;
 		command_path = find_command_path(args[0]);
 		if (command_path == NULL)
 		{
 			fprintf(stderr, "%s: 1: %s: not found\n", argv[0], args[0]);
+			last_status = 127; /* Set status to 127 */
 			continue;
 		}
-		execute_command(args, argv, command_path, line);
+		/* Store the returned status from the executed command */
+		last_status = execute_command(args, argv, command_path, line);
 	}
 	free(line);
-	return (0);
+	return (last_status); /* Return the last command's status */
 }
