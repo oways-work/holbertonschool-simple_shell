@@ -9,13 +9,14 @@
 char *_getenv(const char *name)
 {
 	int i = 0;
-	size_t name_len = _strlen(name);
+	size_t name_len = strlen(name);
 
 	while (environ[i] != NULL)
 	{
-		if (_strncmp(environ[i], name, name_len) == 0 &&
+		if (strncmp(environ[i], name, name_len) == 0 &&
 		    environ[i][name_len] == '=')
 		{
+			/* Return pointer to the value after the '=' */
 			return (environ[i] + name_len + 1);
 		}
 		i++;
