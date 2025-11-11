@@ -1,0 +1,23 @@
+# Compiled files
+*.o
+*.exe
+hsh
+a.out
+
+# Editor backups
+*~
+*.swp
+*.swo
+*#
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Test files
+test_*
+checker
+
+# Core dumps
+core.*
+core.*
