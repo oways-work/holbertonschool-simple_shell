@@ -1,48 +1,86 @@
 #include "shell.h"
 
-char *find_command_path(char *command)
+int main(int argc, char **argv)
 {
-	char *path_env, *path_copy, *dir, *full_path;
+	char *line = NULL;
+	size_t len = 0;
+	ssize_t read_bytes;
+	pid_t child_pid;
+	int status;
+	char *args[64];
+	char *token;
+	int i;
+	const char *delim = " \t\n";
+	char *command_path;
 
-	if (strchr(command, '/') != NULL)
+	(void)argc;
+
+	while (1)
 	{
-		if (access(command, X_OK) == 0)
-			return (_strdup(command));
-		return (NULL);
-	}
+		if (isatty(STDIN_FILENO))
+			write(STDOUT_FILENO, "($) ", 4);
 
-	path_env = _getenv("PATH");
-	if (path_env == NULL)
-		return (NULL);
+		read_bytes = getline(&line, &len, stdin);
 
-	path_copy = _strdup(path_env);
-	if (path_copy == NULL)
-		return (NULL);
-
-	dir = strtok(path_copy, ":");
-	while (dir != NULL)
-	{
-		full_path = malloc(strlen(dir) + strlen(command) + 2);
-		if (full_path == NULL)
+		if (read_bytes == -1)
 		{
-			free(path_copy);
-			return (NULL);
+			if (isatty(STDIN_FILENO))
+				write(STDOUT_FILENO, "\n", 1);
+			break;
 		}
 
-		strcpy(full_path, dir);
-		strcat(full_path, "/");
-		strcat(full_path, command);
+		line[strcspn(line, "\n")] = '\0';
 
-		if (access(full_path, X_OK) == 0)
+		if (line[0] == '\0')
+			continue;
+
+		i = 0;
+		token = strtok(line, delim);
+		while (token != NULL)
 		{
-			free(path_copy);
-			return (full_path);
+			args[i] = token;
+			i++;
+			token = strtok(NULL, delim);
+		}
+		args[i] = NULL;
+
+		if (args[0] == NULL)
+		{
+			continue;
 		}
 
-		free(full_path);
-		dir = strtok(NULL, ":");
+		command_path = find_command_path(args[0]);
+
+		if (command_path == NULL)
+		{
+			fprintf(stderr, "%s: 1: %s: not found\n", argv[0], args[0]);
+			continue;
+		}
+
+		child_pid = fork();
+		if (child_pid == -1)
+		{
+			perror("fork");
+			continue;
+		}
+
+		if (child_pid == 0)
+		{
+			if (execve(command_path, args, environ) == -1)
+			{
+				perror(argv[0]);
+				free(command_path);
+				free(line);
+				exit(1);
+			}
+		}
+		else
+		{
+			wait(&status);
+			free(command_path);
+		}
 	}
 
-	free(path_copy);
-	return (NULL);
+	free(line);
+	return (0);
 }
