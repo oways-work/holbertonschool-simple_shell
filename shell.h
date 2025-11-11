@@ -27,6 +27,7 @@ char *_getenv(const char *name);
 char *find_command_path(char *command);
 
 /* === String Helpers (string_helpers.c) === */
+/* We only need our own _strdup, _strlen, and _strcpy */
 char *_strdup(const char *str);
 int _strlen(const char *s);
 char *_strcpy(char *dest, const char *src);
