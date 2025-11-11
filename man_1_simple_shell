@@ -1,0 +1,40 @@
+.TH HSH 1 "November 2025" "Simple Shell" "User Commands"
+.SH NAME
+hsh - Simple command-line interpreter
+.SH SYNOPSIS
+.B hsh
+.SH DESCRIPTION
+.B hsh
+is a simple UNIX command interpreter (shell) that reads commands from standard input, executes them, and waits for them to complete. It mimics the basic functionality of the Bourne shell (sh).
+.PP
+The shell displays a prompt "($) " and waits for a command. A command line is terminated by a new line.
+.PP
+In non-interactive mode (e.g., \fBecho "ls" | ./hsh\fR), it executes the command(s) and exits.
+.SH COMMAND HANDLING
+.IP
+1.
+Reads a line from standard input.
+.IP
+2.
+Parses the line into a command and arguments.
+.IP
+3.
+Checks if the command is a built-in (\fBexit\fR, \fBenv\fR).
+.IP
+4.
+If not a built-in, it searches for the executable in the directories specified by the \fBPATH\fR environment variable.
+.IP
+5.
+Executes the command in a child process using \fBexecve(2)\fR.
+.SH BUILT-IN COMMANDS
+.TP
+.B exit
+Exit the shell. The shell exits with a status of 0.
+.TP
+.B env
+Print the current environment variables, one per line.
+.SH EXIT STATUS
+.B hsh
+returns the exit status of the last command executed.
+.SH AUTHORS
+Written by the authors listed in the AUTHORS file.
