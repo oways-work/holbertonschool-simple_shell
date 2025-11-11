@@ -16,6 +16,7 @@ extern char **environ;
 /* === Main Functions === */
 /* We need execute_command to return the status */
 int execute_command(char **args, char **argv, char *command_path, char *line);
+void process_command(char *line, char **argv, int *last_status);
 
 /* === Built-in Functions (builtins.c) === */
 /* We need to pass the status to the exit builtin */
