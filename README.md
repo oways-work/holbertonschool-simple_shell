@@ -1,33 +1,51 @@
-**noting that most file were originally created in another repository than transfered here**
+Holberton Simple Shell Project (hsh)
 
-Simple Shell Project
+This is a custom UNIX command-line interpreter (shell) written entirely in C. It is a foundational project for the Holberton School and ALX Software Engineering curriculum, designed to teach process management, system calls, and C programming in depth.
 
-A custom UNIX command-line interpreter built from scratch in C, as part of the ALX Software Engineering program curriculum.
+This shell mimics the core behavior of sh (/bin/sh).
 
-This project aims to replicate the core functionality of the sh shell, including command execution, PATH handling, built-in commands, and error management.
+Features Implemented
 
-Project Structure
+Interactive and Non-Interactive Modes: Works with a prompt or with piped input.
 
-shell.h: Main header file containing prototypes and includes.
+Command Execution: Parses command lines with arguments.
 
-main.c: The main entry point and REPL (Read-Execute-Print-Loop) for the shell.
+PATH Handling: Locates executables in the PATH environment variable.
 
-More files will be added as the project grows...
+Error Handling: Prints error messages (e.g., "not found") matching sh.
+
+Built-in Commands:
+
+exit: Exits the shell.
+
+env: Prints the current environment.
 
 Compilation
 
-The shell is compiled using:
+The project is compiled using gcc with strict flags:
 
 gcc -Wall -Werror -Wextra -pedantic -std=gnu89 *.c -o hsh
 
 
 Usage
 
-Run the compiled executable:
+Interactive Mode
 
 ./hsh
+($) /bin/ls -l
+total 64
+-rw-r--r-- 1 user group  442 Nov 11 15:30 AUTHORS
+-rw-r--r-- 1 user group 1238 Nov 11 15:30 README.md
+...
+($) ls
+README.md  AUTHORS  hsh  main.c ...
+($) env
+USER=user
+PATH=/usr/local/bin:/usr/bin:/bin
+...
+($) exit
 
 
-Or pipe commands to it:
+Non-Interactive Mode
 
-echo "/bin/ls" | ./hsh
+echo "ls -l" | ./hsh
