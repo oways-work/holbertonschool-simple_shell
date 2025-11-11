@@ -7,9 +7,9 @@
  * @command_path: The full path to the command to execute.
  * @line: The original line buffer (for freeing on exec error).
  *
- * Return: Void.
+ * Return: The exit status of the executed command.
  */
-void execute_command(char **args, char **argv, char *command_path, char *line)
+int execute_command(char **args, char **argv, char *command_path, char *line)
 {
 	pid_t child_pid;
 	int status;
@@ -18,7 +18,7 @@ void execute_command(char **args, char **argv, char *command_path, char *line)
 	if (child_pid == -1)
 	{
 		perror("fork");
-		return;
+		return (1);
 	}
 
 	if (child_pid == 0)
@@ -30,7 +30,7 @@ void execute_command(char **args, char **argv, char *command_path, char *line)
 			if (strcmp(command_path, args[0]) != 0)
 				free(command_path);
 			free(line);
-			exit(1);
+			exit(126); /* Exit status for execve failure */
 		}
 	}
 	else
@@ -39,5 +39,9 @@ void execute_command(char **args, char **argv, char *command_path, char *line)
 		wait(&status);
 		if (strcmp(command_path, args[0]) != 0)
 			free(command_path);
+		
+		if (WIFEXITED(status))
+			return (WEXITSTATUS(status)); /* Return the child's exit status */
 	}
+	return (1); /* Return 1 if wait failed */
 }
