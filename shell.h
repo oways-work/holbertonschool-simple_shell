@@ -3,7 +3,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
+#include <string.h> 
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/wait.h>
@@ -14,10 +14,12 @@
 extern char **environ;
 
 /* === Main Functions === */
-void execute_command(char **args, char **argv, char *command_path, char *line);
+/* We need execute_command to return the status */
+int execute_command(char **args, char **argv, char *command_path, char *line);
 
 /* === Built-in Functions (builtins.c) === */
-int handle_builtin(char **args, char *line);
+/* We need to pass the status to the exit builtin */
+int handle_builtin(char **args, char *line, int last_status);
 void print_env(void);
 
 /* === Environment Helpers (env_helpers.c) === */
