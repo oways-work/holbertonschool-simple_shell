@@ -5,16 +5,17 @@
  * @command: The command to find (e.g., "ls").
  *
  * Return: A pointer to the full path, or NULL if not found.
- * The caller must free this memory.
+ * The caller must free this memory if it was dynamically allocated.
  */
 char *find_command_path(char *command)
 {
 	char *path_env, *path_copy, *dir, *full_path;
 
-	if (_strchr(command, '/') != NULL)
+	/* If command is already a path (e.g., /bin/ls), check it */
+	if (strchr(command, '/') != NULL)
 	{
 		if (access(command, X_OK) == 0)
-			return (_strdup(command));
+			return (command); /* No need to _strdup, it's from the line */
 		return (NULL);
 	}
 
@@ -29,27 +30,25 @@ char *find_command_path(char *command)
 	dir = strtok(path_copy, ":");
 	while (dir != NULL)
 	{
-		full_path = malloc(_strlen(dir) + _strlen(command) + 2);
+		/* +2 for the '/' and '\0' */
+		full_path = malloc(strlen(dir) + strlen(command) + 2);
 		if (full_path == NULL)
 		{
 			free(path_copy);
 			return (NULL);
 		}
-
-		_strcpy(full_path, dir);
-		_strcat(full_path, "/");
-		_strcat(full_path, command);
+		strcpy(full_path, dir);
+		strcat(full_path, "/");
+		strcat(full_path, command);
 
 		if (access(full_path, X_OK) == 0)
 		{
 			free(path_copy);
-			return (full_path);
+			return (full_path); /* This was malloc'd, must be freed later */
 		}
-
 		free(full_path);
 		dir = strtok(NULL, ":");
 	}
-
 	free(path_copy);
 	return (NULL);
 }
